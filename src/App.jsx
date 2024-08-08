@@ -1,11 +1,11 @@
 import { useEffect } from 'react';
-import { getFDRsByTeam } from './utils/Loaders';
+import { createPlayerObjects } from './utils/Loaders';
 
 function App() {
   useEffect(() => {
     async function getFDRS() {
       try {
-        await getFDRsByTeam();
+        await createPlayerObjects();
       } catch (error) {
         console.log(error);
       }
