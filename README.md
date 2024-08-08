@@ -1,6 +1,8 @@
-# fpl-helper-Lepistes
+# React + Vite
 
-## Description
-- A fantasy football transfer and team set up app. 
-- No full plan in place but general scope is to utilise the public Fantasy Football API to see what we can use in there.
-- Potential addition of AI to see if the decision making algorithm work can be offloaded to sth like chatgpt instead of trying to code ideal team selection based on several parametres
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+
+Currently, two official plugins are available:
+
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
