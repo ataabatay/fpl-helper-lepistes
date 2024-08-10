@@ -1,16 +1,17 @@
 import { useEffect } from 'react';
-import { createPlayerObjects } from './utils/Loaders';
+import { createPlayerObjects  } from './utils/Loaders';
 
 function App() {
+  // Load players
   useEffect(() => {
-    async function getFDRS() {
+    const getPlayers = async () => {
       try {
         await createPlayerObjects();
       } catch (error) {
         console.log(error);
       }
-    }
-    getFDRS();
+    };
+    getPlayers();
   }, []);
 
   return (

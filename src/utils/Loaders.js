@@ -1,11 +1,11 @@
 /* eslint-disable no-unused-vars */
-import axios, { all } from 'axios';
+import axios from 'axios';
 
 // fetch data of all the players and more from the main endpoint
 async function getAllData() {
   try {
-    const rawPlayers = await axios.get('/api/api/bootstrap-static/');
-    return rawPlayers.data;
+    const rawData = await axios.get('/api/api/bootstrap-static/');
+    return rawData.data;
   } catch (error) {
     console.log(error);
     throw error;
@@ -23,24 +23,35 @@ async function getRawFixturesData() {
 }
 
 // uses the fixtures api call to create an array of gameweeks with each element as an object of teams, their fdrs for the week and wether they play home or away
-async function getFDRsByWeek() {
+export async function getFDRsByWeek() {
   try {
     const fixtures = await getRawFixturesData();
+    const allData = await getAllData();
+    const teams = allData.teams;
     const gameweekArray = [];
     fixtures.forEach((fixture) => {
       // find the gameweek object
       const index = gameweekArray.findIndex((obj) => obj['gameweek'] === fixture.event);
+      // home team and away team
+      const homeTeam = teams.find((obj) => obj.id === fixture.team_h);
+      const awayTeam = teams.find((obj) => obj.id === fixture.team_a);
 
       // fdrs to add
       const fdrForHomeTeam = {
         teamId: fixture.team_h,
+        teamName: homeTeam.short_name,
         fdr: fixture.team_h_difficulty,
         homeAway: 'H',
+        againstId: fixture.team_a,
+        againstName: awayTeam.short_name,
       };
       const fdrForAwayTeam = {
         teamId: fixture.team_a,
+        teamName: awayTeam.short_name,
         fdr: fixture.team_a_difficulty,
         homeAway: 'A',
+        againstId: fixture.team_h,
+        againstName: homeTeam.short_name,
       };
 
       // if the gameweek object exists add the new 'team: fdr' keyvalue pair to the object
@@ -60,7 +71,7 @@ async function getFDRsByWeek() {
 }
 
 // uses the fixtures api call to create an array of teams with each element as an object of teams, their fdrs for all the gameweeks and wether they play home or away on that gameweek
-async function getFDRsByTeam() {
+export async function getFDRsByTeam() {
   try {
     const weeklyFDRS = await getFDRsByWeek();
     const teamFDRArray = [];
@@ -71,20 +82,24 @@ async function getFDRsByTeam() {
           teamFDRArray[teamIndex].fdrs.push({
             [`gw-dif: ${index}`]: fdr.fdr,
             'home/away': fdr.homeAway,
+            against: fdr.againstName,
           });
         } else {
           teamFDRArray.push({
             teamId: fdr.teamId,
+            teamName: fdr.teamName,
             fdrs: [
               {
                 [`gw-dif: ${index}`]: fdr.fdr,
                 'home/away': fdr.homeAway,
+                against: fdr.againstName,
               },
             ],
           });
         }
       });
     });
+    console.log(teamFDRArray.sort((a, b) => a.teamId - b.teamId));
     return teamFDRArray.sort((a, b) => a.teamId - b.teamId);
   } catch (error) {
     console.log(error);
@@ -104,14 +119,17 @@ export async function createPlayerObjects() {
     rawPlayersData.forEach((player) => {
       const team = teams.find((obj) => obj.id === player.team);
       const position = positions.find((obj) => obj.id === player.element_type);
-      const fdrs = fdrData.find(obj => obj.teamId === team.id)
+      const fdrs = fdrData.find((obj) => obj.teamId === team.id);
 
       if (team && position) {
         populatedPlayersData.push({
           id: player.id,
-          name: player.web_name,
+          firstName: player.first_name,
+          lastName: player.second_name,
+          displayName: player.web_name,
           teamId: team.id,
           team: team.short_name,
+          teamLogo: `https://resources.premierleague.com/premierleague/badges/100/t${team.code}.png`,
           positionId: position.id,
           position: position.singular_name_short,
           value: player.now_cost / 10,
@@ -124,15 +142,23 @@ export async function createPlayerObjects() {
           cleanSheets: player.clean_sheets,
           goalsConceded: player.goals_conceded,
           totalBonusPoints: player.bonus,
+          totalPoints: player.total_points,
           bps: player.bps,
           ICT: player.ict_index,
           fdrs: fdrs.fdrs,
         });
       }
     });
-    console.log(populatedPlayersData)
-    return populatedPlayersData
+    console.log(populatedPlayersData);
+    return populatedPlayersData;
   } catch (error) {
     console.log(error);
   }
 }
+
+// Complete login function
+export async function LogUserIn() {
+  console.log('Attempting user login');
+}
+
+// Create a fetchMyTeam function after logging in
