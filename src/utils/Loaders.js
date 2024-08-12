@@ -1,8 +1,8 @@
 /* eslint-disable no-unused-vars */
-import axios from 'axios';
+import axios, { all } from 'axios';
 
 // fetch data of all the players and more from the main endpoint
-async function getAllData() {
+export async function getAllData() {
   try {
     const rawData = await axios.get('/api/api/bootstrap-static/');
     return rawData.data;
@@ -28,7 +28,16 @@ export async function getFDRsByWeek() {
     const fixtures = await getRawFixturesData();
     const allData = await getAllData();
     const teams = allData.teams;
+    
+    //  disecting the current gameweek id so we can use it
+    let activeGameweek = null
+    if (allData.events.find((obj) => obj.is_current === true)) {
+      activeGameweek = allData.events.find((obj) => obj.is_current === true).id
+    } else {
+      activeGameweek = allData.events.find(obj => obj.is_next === true).id
+    }
     const gameweekArray = [];
+
     fixtures.forEach((fixture) => {
       // find the gameweek object
       const index = gameweekArray.findIndex((obj) => obj['gameweek'] === fixture.event);
@@ -60,6 +69,7 @@ export async function getFDRsByWeek() {
       } else {
         gameweekArray.push({
           gameweek: fixture.event,
+          activeGameWeek: activeGameweek === fixture.event,
           fdrs: [fdrForHomeTeam, fdrForAwayTeam],
         });
       }
@@ -73,9 +83,9 @@ export async function getFDRsByWeek() {
 // uses the fixtures api call to create an array of teams with each element as an object of teams, their fdrs for all the gameweeks and wether they play home or away on that gameweek
 export async function getFDRsByTeam() {
   try {
-    const weeklyFDRS = await getFDRsByWeek();
+    const gameweekArray = await getFDRsByWeek();
     const teamFDRArray = [];
-    weeklyFDRS.forEach((week, index) => {
+    gameweekArray.forEach((week, index) => {
       week.fdrs.forEach((fdr) => {
         const teamIndex = teamFDRArray.findIndex((obj) => obj['teamId'] === fdr['teamId']);
         if (teamIndex !== -1) {
@@ -99,7 +109,6 @@ export async function getFDRsByTeam() {
         }
       });
     });
-    console.log(teamFDRArray.sort((a, b) => a.teamId - b.teamId));
     return teamFDRArray.sort((a, b) => a.teamId - b.teamId);
   } catch (error) {
     console.log(error);

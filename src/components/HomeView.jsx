@@ -1,9 +1,12 @@
-import { Outlet } from 'react-router-dom';
+import { useEffect } from 'react';
+import { Outlet, useLoaderData } from 'react-router-dom';
+import Navigation from './Navigation';
 
 export default function HomeView() {
+
   return (
     <>
-      <h1>This will be the home view</h1>
+      <Navigation />
       <Outlet />
     </>
   );
