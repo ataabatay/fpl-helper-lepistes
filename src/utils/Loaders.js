@@ -28,13 +28,13 @@ export async function getFDRsByWeek() {
     const fixtures = await getRawFixturesData();
     const allData = await getAllData();
     const teams = allData.teams;
-    
+
     //  disecting the current gameweek id so we can use it
-    let activeGameweek = null
+    let activeGameweek = null;
     if (allData.events.find((obj) => obj.is_current === true)) {
-      activeGameweek = allData.events.find((obj) => obj.is_current === true).id
+      activeGameweek = allData.events.find((obj) => obj.is_current === true).id;
     } else {
-      activeGameweek = allData.events.find(obj => obj.is_next === true).id
+      activeGameweek = allData.events.find((obj) => obj.is_next === true).id;
     }
     const gameweekArray = [];
 
@@ -74,6 +74,7 @@ export async function getFDRsByWeek() {
         });
       }
     });
+    console.log(gameweekArray);
     return gameweekArray;
   } catch (error) {
     console.log(error);
@@ -109,6 +110,7 @@ export async function getFDRsByTeam() {
         }
       });
     });
+    console.log(teamFDRArray.sort((a, b) => a.teamId - b.teamId));
     return teamFDRArray.sort((a, b) => a.teamId - b.teamId);
   } catch (error) {
     console.log(error);
