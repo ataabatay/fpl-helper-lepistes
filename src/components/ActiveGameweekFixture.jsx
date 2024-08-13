@@ -7,11 +7,6 @@ import { all } from 'axios';
 
 export default function ActiveGameweekFixture() {
   const {
-    data: { teams: allTeams },
-    // isLoading: allDataLoading,
-    // error: allDataError,
-  } = useQuery('allData', getAllData);
-  const {
     data: allFixturesByWeek,
     // isLoading: fixturesByWeekLoading,
     // error: fixturesByWeekError,
@@ -24,14 +19,21 @@ export default function ActiveGameweekFixture() {
   // eslint-disable-next-line no-unused-vars
   const [activeGameweekFixtures, setActiveGameweekFixtures] = useState(allFixturesByWeek[activeGameweek - 1].fdrs);
 
-  // ! COMPLETE THE ON CLICK FOR THE BUTTONS FUNCTIONS THEY ARE NOT WORKING 
+  // ! COMPLETE THE ON CLICK FOR THE BUTTONS FUNCTIONS THEY ARE NOT WORKING
   const goToPrev = () => {
-    setActiveGameweek((prev) => prev - 1);
-    setActiveGameweekFixtures(allFixturesByWeek[activeGameweek - 1].fdrs);
+    setActiveGameweek((prev) => {
+      const newGameweek = prev - 1;
+      setActiveGameweekFixtures(allFixturesByWeek[newGameweek - 1]?.fdrs || []);
+      return newGameweek
+    });
   };
+
   const goToNext = () => {
-    setActiveGameweek((prev) => prev + 1);
-    setActiveGameweekFixtures(allFixturesByWeek[activeGameweek - 1].fdrs);
+    setActiveGameweek((prev) => {
+      const newGameweek = prev + 1;
+      setActiveGameweekFixtures(allFixturesByWeek[newGameweek - 1]?.fdrs || []);
+      return newGameweek;
+    });
   };
 
   return (
@@ -39,9 +41,21 @@ export default function ActiveGameweekFixture() {
       <section className="current-weeks-fixture flex justify-center">
         <table className="w-120 flex flex-col gap-10 max-w-fit p-10">
           <thead className="flex items-center justify-between relative">
-            {activeGameweek === 1 ? '' : <button onClick={goToPrev} className='absolute left-0'>⬅️</button>}
+            {activeGameweek === 1 ? (
+              ''
+            ) : (
+              <button onClick={goToPrev} className="absolute left-0">
+                ⬅️
+              </button>
+            )}
             <th className="flex text-3xl justify-center mx-auto">Gameweek {activeGameweek}</th>
-            {activeGameweek === allFixturesByWeek.length ? '' : <button onClick={goToNext} className='absolute right-0'>➡️</button>}
+            {activeGameweek === allFixturesByWeek.length ? (
+              ''
+            ) : (
+              <button onClick={goToNext} className="absolute right-0">
+                ➡️
+              </button>
+            )}
           </thead>
           <tbody className="flex flex-col gap-4">
             {activeGameweekFixtures.map((game, index) => {
