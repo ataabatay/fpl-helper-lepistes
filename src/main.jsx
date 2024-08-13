@@ -18,12 +18,12 @@ const router = createBrowserRouter([
     path: '/',
     element: <HomeView />,
     loader: async () => {
-      const [allData, fdrsByWeek] = await Promise.all([
+      const [allData, fdrsByWeek, fdrsByTeam] = await Promise.all([
         queryClient.fetchQuery('allData', getAllData),
         queryClient.fetchQuery('fdrsByWeek', getFDRsByWeek),
         queryClient.fetchQuery('fdrsByTeam', getFDRsByTeam),
       ]);
-      return { allData, fdrsByWeek };
+      return { allData, fdrsByWeek, fdrsByTeam };
     },
     children: [
       {

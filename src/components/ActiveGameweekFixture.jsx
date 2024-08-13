@@ -1,24 +1,81 @@
-import { useQuery } from 'react-query'
-import { getAllData, getFDRsByWeek } from '../utils/Loaders'
-import { useEffect } from 'react'
+/* eslint-disable react/prop-types */
+import { useQuery } from 'react-query';
+import { getAllData, getFDRsByTeam, getFDRsByWeek } from '../utils/Loaders';
+import { getTeamFixtures } from '../utils/helpers';
+import { useEffect, useState } from 'react';
+import { all } from 'axios';
 
 export default function ActiveGameweekFixture() {
+  const {
+    data: { teams: allTeams },
+    // isLoading: allDataLoading,
+    // error: allDataError,
+  } = useQuery('allData', getAllData);
+  const {
+    data: allFixturesByWeek,
+    // isLoading: fixturesByWeekLoading,
+    // error: fixturesByWeekError,
+  } = useQuery('fdrsByWeek', getFDRsByWeek);
 
-  const {data: allData, isLoading: isLoadingAllData, error: allDataError} = useQuery('allData', getAllData)
-  const {data: fixtureByWeek, isLoading: isLoadingFixtures, error: fixturesError} = useQuery('fdrsByWeek', getFDRsByWeek)
+  // eslint-disable-next-line no-unused-vars
+  const [activeGameweek, setActiveGameweek] = useState(
+    () => allFixturesByWeek.find((obj) => obj.activeGameWeek === true).gameweek
+  );
+  // eslint-disable-next-line no-unused-vars
+  const [activeGameweekFixtures, setActiveGameweekFixtures] = useState(allFixturesByWeek[activeGameweek - 1].fdrs);
 
-  useEffect(() => {
-    console.log(allData)
-    console.log(fixtureByWeek)
-  })
-
-  if (isLoadingAllData || isLoadingFixtures) return <div>Loading...</div>
-  if (allDataError) return <div>Error loading data: {allDataError.message}</div>
-  if (fixturesError) return <div>Error loading data: {fixturesError.message}</div>
+  // ! COMPLETE THE ON CLICK FOR THE BUTTONS FUNCTIONS THEY ARE NOT WORKING 
+  const goToPrev = () => {
+    setActiveGameweek((prev) => prev - 1);
+    setActiveGameweekFixtures(allFixturesByWeek[activeGameweek - 1].fdrs);
+  };
+  const goToNext = () => {
+    setActiveGameweek((prev) => prev + 1);
+    setActiveGameweekFixtures(allFixturesByWeek[activeGameweek - 1].fdrs);
+  };
 
   return (
     <>
-      <h1>active game week fixture</h1>
+      <section className="current-weeks-fixture flex justify-center">
+        <table className="w-120 flex flex-col gap-10 max-w-fit p-10">
+          <thead className="flex items-center justify-between relative">
+            {activeGameweek === 1 ? '' : <button onClick={goToPrev} className='absolute left-0'>⬅️</button>}
+            <th className="flex text-3xl justify-center mx-auto">Gameweek {activeGameweek}</th>
+            {activeGameweek === allFixturesByWeek.length ? '' : <button onClick={goToNext} className='absolute right-0'>➡️</button>}
+          </thead>
+          <tbody className="flex flex-col gap-4">
+            {activeGameweekFixtures.map((game, index) => {
+              if (game.homeAway === 'H') {
+                return (
+                  <tr key={index}>
+                    <td className="text-xl flex gap-2 justify-">
+                      <div className="home-team flex items-center gap-2">
+                        <span className="min-w-20 text-center">{game.teamName}</span>
+                        <img
+                          className="size-8"
+                          src={`${`https://resources.premierleague.com/premierleague/badges/100/t${game.homeTeamCode}.png`}`}
+                          alt=""
+                        />
+                      </div>
+                      <span className="min-w-20 text-center">
+                        {game.goalsFor ? game.goalsFor : '-'} : {game.goalsAgainst ? game.goalsAgainst : '-'}
+                      </span>{' '}
+                      <div className="home-team flex items-center gap-">
+                        <img
+                          className="size-8"
+                          src={`${`https://resources.premierleague.com/premierleague/badges/100/t${game.againstTeamCode}.png`}`}
+                          alt=""
+                        />
+                        <span className="min-w-20 text-center">{game.againstName}</span>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              }
+            })}
+          </tbody>
+        </table>
+      </section>
     </>
-  )
+  );
 }

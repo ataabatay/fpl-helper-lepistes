@@ -1,23 +1,11 @@
 /* eslint-disable react/prop-types */
 import { useQuery } from 'react-query';
 import { getAllData, getFDRsByTeam, getFDRsByWeek } from '../utils/Loaders';
-import { difficultyColors } from '../utils/helpers';
+import { difficultyColors, getTeamFixtures } from '../utils/helpers';
 
 const NUMBER_OF_FIXTURES_TO_SHOW = 5;
 
-const getTeamFixtures = (teamId, NUMBER_OF_FIXTURES_TO_SHOW, allFixturesByTeam, activeGameWeek) => {
-  const teamFixtures = allFixturesByTeam.find((obj) => obj.teamId === teamId);
-  return Array.from({ length: NUMBER_OF_FIXTURES_TO_SHOW }, (_, i) => {
-    const fixture = teamFixtures?.fdrs.find((obj) => obj.gameweek === activeGameWeek + i);
-    return {
-      against: fixture?.against,
-      homeAway: fixture?.homeAway,
-      difficulty: fixture?.gwDif,
-    };
-  });
-};
-
-const TeamRow = ({ idx, team, totalGoalsFor, totalGoalsAgainst, fixtures }) => {
+const FullTableTeamRow = ({ idx, team, totalGoalsFor, totalGoalsAgainst, fixtures }) => {
   return (
     <>
       <tr key={idx} className="flex text-center items-center pl-3 border-b gap-2 border-[#4a4a4a] hover:bg-[#4a4a4a]">
@@ -118,7 +106,7 @@ export default function LeagueTable() {
               );
 
               return (
-                <TeamRow
+                <FullTableTeamRow
                   key={idx}
                   idx={idx}
                   team={team}

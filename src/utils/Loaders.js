@@ -55,6 +55,9 @@ export async function getFDRsByWeek() {
         homeAway: 'H',
         againstId: fixture.team_a,
         againstName: awayTeam.short_name,
+        kickOffTime: fixture.kickoff_time,
+        againstTeamCode: awayTeam.code,
+        homeTeamCode: homeTeam.code
       };
       const fdrForAwayTeam = {
         teamId: fixture.team_a,
@@ -65,6 +68,9 @@ export async function getFDRsByWeek() {
         homeAway: 'A',
         againstId: fixture.team_h,
         againstName: homeTeam.short_name,
+        kickOffTime: fixture.kickoff_time,
+        againstTeamCode: awayTeam.code,
+        homeTeamCode: homeTeam.code
       };
 
       // if the gameweek object exists add the new 'team: fdr' keyvalue pair to the object
@@ -88,7 +94,6 @@ export async function getFDRsByWeek() {
 export async function getFDRsByTeam() {
   try {
     const gameweekArray = await getFDRsByWeek();
-    console.log(gameweekArray)
     const teamFDRArray = [];
     gameweekArray.forEach((week, index) => {
       week.fdrs.forEach((fdr) => {
@@ -103,8 +108,8 @@ export async function getFDRsByTeam() {
             goalsAgainst: fdr.goalsAgainst,
           });
           // increment the total goals for and against
-          teamFDRArray[teamIndex].totalGoalsFor += fdr.goalsFor
-          teamFDRArray[teamIndex].totalGoalsAgainst += fdr.goalsAgainst
+          teamFDRArray[teamIndex].totalGoalsFor += fdr.goalsFor;
+          teamFDRArray[teamIndex].totalGoalsAgainst += fdr.goalsAgainst;
         } else {
           teamFDRArray.push({
             teamId: fdr.teamId,
