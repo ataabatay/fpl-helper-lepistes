@@ -50,6 +50,8 @@ export async function getFDRsByWeek() {
         teamId: fixture.team_h,
         teamName: homeTeam.short_name,
         fdr: fixture.team_h_difficulty,
+        goalsFor: fixture.team_h_score,
+        goalsAgainst: fixture.team_a_score,
         homeAway: 'H',
         againstId: fixture.team_a,
         againstName: awayTeam.short_name,
@@ -58,6 +60,8 @@ export async function getFDRsByWeek() {
         teamId: fixture.team_a,
         teamName: awayTeam.short_name,
         fdr: fixture.team_a_difficulty,
+        goalsFor: fixture.team_a_score,
+        goalsAgainst: fixture.team_h_score,
         homeAway: 'A',
         againstId: fixture.team_h,
         againstName: homeTeam.short_name,
@@ -74,7 +78,6 @@ export async function getFDRsByWeek() {
         });
       }
     });
-    console.log(gameweekArray);
     return gameweekArray;
   } catch (error) {
     console.log(error);
@@ -85,32 +88,43 @@ export async function getFDRsByWeek() {
 export async function getFDRsByTeam() {
   try {
     const gameweekArray = await getFDRsByWeek();
+    console.log(gameweekArray)
     const teamFDRArray = [];
     gameweekArray.forEach((week, index) => {
       week.fdrs.forEach((fdr) => {
         const teamIndex = teamFDRArray.findIndex((obj) => obj['teamId'] === fdr['teamId']);
         if (teamIndex !== -1) {
           teamFDRArray[teamIndex].fdrs.push({
-            [`gw-dif: ${index}`]: fdr.fdr,
-            'home/away': fdr.homeAway,
+            gameweek: week.gameweek,
+            gwDif: fdr.fdr,
+            homeAway: fdr.homeAway,
             against: fdr.againstName,
+            goalsFor: fdr.goalsFor,
+            goalsAgainst: fdr.goalsAgainst,
           });
+          // increment the total goals for and against
+          teamFDRArray[teamIndex].totalGoalsFor += fdr.goalsFor
+          teamFDRArray[teamIndex].totalGoalsAgainst += fdr.goalsAgainst
         } else {
           teamFDRArray.push({
             teamId: fdr.teamId,
             teamName: fdr.teamName,
             fdrs: [
               {
-                [`gw-dif: ${index}`]: fdr.fdr,
-                'home/away': fdr.homeAway,
+                gameweek: week.gameweek,
+                gwDif: fdr.fdr,
+                homeAway: fdr.homeAway,
                 against: fdr.againstName,
+                goalsFor: fdr.goalsFor,
+                goalsAgainst: fdr.goalsAgainst,
               },
             ],
+            totalGoalsFor: fdr.goalsFor,
+            totalGoalsAgainst: fdr.goalsAgainst,
           });
         }
       });
     });
-    console.log(teamFDRArray.sort((a, b) => a.teamId - b.teamId));
     return teamFDRArray.sort((a, b) => a.teamId - b.teamId);
   } catch (error) {
     console.log(error);

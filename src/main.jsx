@@ -21,13 +21,14 @@ const router = createBrowserRouter([
       const [allData, fdrsByWeek] = await Promise.all([
         queryClient.fetchQuery('allData', getAllData),
         queryClient.fetchQuery('fdrsByWeek', getFDRsByWeek),
+        queryClient.fetchQuery('fdrsByTeam', getFDRsByTeam),
       ]);
       return { allData, fdrsByWeek };
     },
     children: [
       {
         path: '/home',
-        element: <HomeScreen />
+        element: <HomeScreen />,
       },
       {
         path: '/players',
@@ -57,9 +58,7 @@ const router = createBrowserRouter([
 ]);
 
 createRoot(document.getElementById('root')).render(
-  <StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <RouterProvider router={router} />
-    </QueryClientProvider>
-  </StrictMode>
+  <QueryClientProvider client={queryClient}>
+    <RouterProvider router={router} />
+  </QueryClientProvider>
 );

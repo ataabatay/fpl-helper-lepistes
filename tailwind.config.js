@@ -6,7 +6,7 @@ export default {
       height: {
         'nav-height': '64px',
         'screen-minus-nav': 'calc(100vh - 64px)',
-      }
+      },
     },
   },
   plugins: [],
