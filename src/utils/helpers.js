@@ -17,3 +17,11 @@ export const getTeamFixtures = (teamId, NUMBER_OF_FIXTURES_TO_SHOW, allFixturesB
     };
   });
 };
+
+export const playerStatuses = {
+  a: '',
+  d: '⚠️',
+  i: '🏥',
+  u: '❌',
+  s: '🟥',
+}

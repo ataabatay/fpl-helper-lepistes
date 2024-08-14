@@ -179,7 +179,6 @@ export async function createPlayerObjects() {
           fdrs: fdrs.fdrs,
           form: player.form,
           status: player.status,
-
         });
       }
     });
