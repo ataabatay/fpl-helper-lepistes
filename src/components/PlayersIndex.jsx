@@ -65,7 +65,8 @@ export default function PlayersIndex() {
 
   const [filteredPlayers, setFilteredPlayers] = useState(allPlayers.sort((a,b) => b.totalPoints - a.totalPoints))
   const [filters, setFilters] = useState({
-    filter: null,
+    teamFilter: null,
+    positionFilter: null,
     sort: null,
   })
 
@@ -77,7 +78,12 @@ export default function PlayersIndex() {
         sort: newSort
       }
       setFilteredPlayers(prev => {
-        const newlySortedPlayers = [...prev].sort((a,b) => b[newSort] - a[newSort])
+        let newlySortedPlayers = []
+        if (newSort != 'goalsConceded') {
+          newlySortedPlayers = [...prev].sort((a,b) => b[newSort] - a[newSort])
+        } else {
+          newlySortedPlayers = [...prev].sort((a,b) => a[newSort] - b[newSort])
+        }
         return newlySortedPlayers
       })
       return newFilter

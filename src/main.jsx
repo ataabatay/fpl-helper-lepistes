@@ -9,6 +9,8 @@ import Login from './components/Login.jsx';
 import { getAllData, getFDRsByWeek, createPlayerObjects, getFDRsByTeam, LogUserIn } from './utils/Loaders.js';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import HomeScreen from './components/HomeScreen.jsx';
+import PaginatedPlayers from './components/PaginatedPlayers.jsx';
+import PlayersIndexTest from './components/PlayersIndexTest.jsx';
 
 const queryClient = new QueryClient();
 
@@ -31,7 +33,7 @@ const router = createBrowserRouter([
       },
       {
         path: '/players',
-        element: <PlayersIndex />,
+        element: <PlayersIndexTest />,
         loader: async () => {
           return queryClient.fetchQuery('playerObjects', createPlayerObjects);
         },
