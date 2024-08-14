@@ -332,15 +332,15 @@ export default function PlayersIndexTest() {
           ))}
         </tbody>
         <ReactPaginate
-            breakLabel="..."
-            nextLabel="next >"
-            previousLabel="< prev"
-            onPageChange={handlePageClick}
-            pageRangeDisplayed={5}
-            pageCount={pageCount}
-            renderOnZeroPageCount={null}
-            className="flex gap-4 py-6"
-          />
+          breakLabel="..."
+          nextLabel="next >"
+          previousLabel="< prev"
+          onPageChange={handlePageClick}
+          pageRangeDisplayed={5}
+          pageCount={pageCount}
+          renderOnZeroPageCount={null}
+          className="flex gap-4 py-6"
+        />
       </table>
     </section>
   );
