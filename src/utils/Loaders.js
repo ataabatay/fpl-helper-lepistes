@@ -163,10 +163,11 @@ export async function createPlayerObjects() {
           positionId: position.id,
           position: position.singular_name_short,
           value: player.now_cost / 10,
-          ownership: `${player.selected_by_percent}%`,
-          gamesStarts: player.starts,
+          ownership: player.selected_by_percent,
+          gamesStarted: player.starts,
           pointsPerStart: player.total_points / player.starts,
           pointsPerMinute: (player.total_points / player.minutes).toFixed(4),
+          pointsPerGame: player.points_per_game,
           goals: player.goals_scored,
           assists: player.assists,
           cleanSheets: player.clean_sheets,
@@ -174,8 +175,11 @@ export async function createPlayerObjects() {
           totalBonusPoints: player.bonus,
           totalPoints: player.total_points,
           bps: player.bps,
-          ICT: player.ict_index,
+          ict: player.ict_index,
           fdrs: fdrs.fdrs,
+          form: player.form,
+          status: player.status,
+
         });
       }
     });

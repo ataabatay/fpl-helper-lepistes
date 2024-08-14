@@ -1,25 +1,18 @@
 /* eslint-disable react/prop-types */
 import { useQuery } from 'react-query';
-import { getAllData, getFDRsByTeam, getFDRsByWeek } from '../utils/Loaders';
-import { getTeamFixtures } from '../utils/helpers';
-import { useEffect, useState } from 'react';
-import { all } from 'axios';
+import { getFDRsByWeek } from '../utils/Loaders';
+import { useState } from 'react';
 
 export default function ActiveGameweekFixture() {
   const {
     data: allFixturesByWeek,
-    // isLoading: fixturesByWeekLoading,
-    // error: fixturesByWeekError,
   } = useQuery('fdrsByWeek', getFDRsByWeek);
 
-  // eslint-disable-next-line no-unused-vars
   const [activeGameweek, setActiveGameweek] = useState(
     () => allFixturesByWeek.find((obj) => obj.activeGameWeek === true).gameweek
   );
-  // eslint-disable-next-line no-unused-vars
   const [activeGameweekFixtures, setActiveGameweekFixtures] = useState(allFixturesByWeek[activeGameweek - 1].fdrs);
 
-  // ! COMPLETE THE ON CLICK FOR THE BUTTONS FUNCTIONS THEY ARE NOT WORKING
   const goToPrev = () => {
     setActiveGameweek((prev) => {
       const newGameweek = prev - 1;
@@ -62,8 +55,8 @@ export default function ActiveGameweekFixture() {
               if (game.homeAway === 'H') {
                 return (
                   <tr key={index}>
-                    <td className="text-xl flex gap-2 justify-">
-                      <div className="home-team flex items-center gap-2">
+                    <td className="text-xl flex gap-2">
+                      <div className="home-team flex items-center gap-2 min-w-fit">
                         <span className="min-w-20 text-center">{game.teamName}</span>
                         <img
                           className="size-8"
@@ -74,7 +67,7 @@ export default function ActiveGameweekFixture() {
                       <span className="min-w-20 text-center">
                         {game.goalsFor ? game.goalsFor : '-'} : {game.goalsAgainst ? game.goalsAgainst : '-'}
                       </span>{' '}
-                      <div className="home-team flex items-center gap-">
+                      <div className="home-team flex items-center gap-2 min-w-fit">
                         <img
                           className="size-8"
                           src={`${`https://resources.premierleague.com/premierleague/badges/100/t${game.againstTeamCode}.png`}`}

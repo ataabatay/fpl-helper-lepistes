@@ -17,7 +17,7 @@ const FullTableTeamRow = ({ idx, team, totalGoalsFor, totalGoalsAgainst, fixture
             alt=""
           />
         </td>
-        <td className="flex-grow text-left">{team.name}</td>
+        <td className="flex-grow text-left text-nowrap min-w-32">{team.name}</td>
         <td className="w-6">{team.played}</td>
         <td className="w-6">{team.win}</td>
         <td className="w-6">{team.loss}</td>
@@ -72,7 +72,7 @@ export default function LeagueTable() {
             <tr className="flex border-b border-[#4a4a4a] gap-2 pl-3 items-center h-10">
               <th className="w-6 min-w-fit"></th>
               <th className="w-6 min-w-fit"></th>
-              <th className="flex-grow text-left">Club</th>
+              <th className="flex-grow text-left min-w-32">Club</th>
               <th className="w-6 min-w-fit">Pl</th>
               <th className="w-6 min-w-fit">W</th>
               <th className="w-6 min-w-fit">L</th>
