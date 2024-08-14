@@ -1,9 +1,11 @@
 /* eslint-disable react/prop-types */
 import { useQuery } from 'react-query';
-import { createPlayerObjects, getFDRsByWeek } from '../utils/Loaders';
+import { createPlayerObjects, getAllData, getFDRsByWeek } from '../utils/Loaders';
 import { difficultyColors, playerStatuses } from '../utils/helpers';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import ReactPaginate from 'react-paginate';
+import Select from 'react-select';
+import { SingleValue, ValueContainer } from 'react-select/animated';
 
 const NUMBER_OF_FIXTURES_TO_SHOW = 10;
 const PLAYERS_PER_PAGE = 20;
@@ -56,6 +58,9 @@ const PlayerStatsRow = ({ player, activeGameWeek }) => {
 export default function PlayersIndexTest() {
   const { data: allFixturesByWeek } = useQuery('fdrsByWeek', getFDRsByWeek);
   const { data: allPlayers } = useQuery('playerObjects', createPlayerObjects);
+  const {
+    data: { teams: allTeams, element_types: positions },
+  } = useQuery('allData', getAllData);
 
   // ! Filter state
   const [filters, setFilters] = useState({
@@ -65,6 +70,7 @@ export default function PlayersIndexTest() {
   });
 
   const [currentPage, setCurrentPage] = useState(0);
+
   const filteredAndSortedPlayers = useMemo(() => {
     let result = [...allPlayers];
 
@@ -99,27 +105,91 @@ export default function PlayersIndexTest() {
     setCurrentPage(0);
   }
 
+  // ! Filters
+  const teamOptions = allTeams.map((team) => ({
+    value: team.id,
+    label: team.name,
+  }));
+  const positionOptions = positions.map((position) => ({
+    value: position.id,
+    label: position.singular_name_short,
+  }));
+  // function to filter players based on team
+  function changeTeamFilter(e) {
+    console.log(e);
+    setFilters((prev) => ({
+      ...prev,
+      teamFilter: e,
+    }));
+  }
+  // function to filter players based on position
+  function changePositionFilter(e) {
+    console.log(e);
+    setFilters((prev) => ({
+      ...prev,
+      positionFilter: e,
+    }));
+  }
+
+  // ! Variables
   // active gameweek and the upcoming fixtures data
   const activeGameweek = allFixturesByWeek.find((obj) => obj.activeGameWeek === true).gameweek;
   const fixturesToDisplayArray = Array.from({ length: NUMBER_OF_FIXTURES_TO_SHOW }, (_, i) => activeGameweek + i);
 
   const tableHeaderStyle =
     'hover:bg-[#4a4a4a] hover:cursor-pointer text-sm font-light size-12 flex items-center justify-center p-0';
+  const selectStyles = {
+    control: (baseStyles) => ({
+      ...baseStyles,
+      background: 'inherit',
+      textAlign: 'left',
+      cursor: 'pointer',
+      color: 'white',
+    }),
+    option: (baseStyles, state) => ({
+      ...baseStyles,
+      textAlign: 'left',
+      cursor: 'pointer',
+      background: state.isFocused ? '#4a4a4a' : '#2a2a2a',
+      color: 'white',
+    }),
+    input: (baseStyles) => ({
+      ...baseStyles,
+      minWidth: '150px',
+      color: 'white',
+      cursor: 'pointer',
+    }),
+    menu: (baseStyles) => ({
+      ...baseStyles,
+      background: '#2a2a2a',
+    }),
+    singleValue: (baseStyles) => ({
+      ...baseStyles,
+      color: 'white',
+    }),
+  };
 
   return (
     <section className="all-players min-h-screen max-w-fit mx-auto p-8 ">
       <div className="flex justify-between p-2 text-right">
-        <ReactPaginate
-          breakLabel="..."
-          nextLabel="next >"
-          previousLabel="< prev"
-          onPageChange={handlePageClick}
-          pageRangeDisplayed={5}
-          pageCount={pageCount}
-          renderOnZeroPageCount={null}
-          className="flex gap-4 py-2"
-        />
-        <div className="filters"></div>
+        <div className="filters flex gap-8">
+          <Select
+            onChange={changeTeamFilter}
+            options={teamOptions}
+            name="teamFilter"
+            placeholder="Filter by team"
+            value={filters.teamFilter}
+            styles={selectStyles}
+          />
+          <Select
+            onChange={changePositionFilter}
+            options={positionOptions}
+            name="positionFilter"
+            placeholder="Filter by position"
+            value={filters.positionFilter}
+            styles={selectStyles}
+          />
+        </div>
         <div className="flex gap-2 items-center active-gameweek-info">
           <span>Active Gameweek:</span>
           <span className="text-lg text-lime-400">{activeGameweek}</span>
@@ -137,46 +207,116 @@ export default function PlayersIndexTest() {
             <th id="name" className={`${tableHeaderStyle} min-w-32 justify-stretch`}>
               NAM
             </th>
-            <th onClick={changeSort} id="form" className={tableHeaderStyle} style={{background: filters.sort === 'form' ? '#4a4a4a' : 'inherit'}}>
+            <th
+              onClick={changeSort}
+              id="form"
+              className={tableHeaderStyle}
+              style={{ background: filters.sort === 'form' ? '#4a4a4a' : 'inherit' }}
+            >
               FOR
             </th>
-            <th onClick={changeSort} id="value" className={tableHeaderStyle} style={{background: filters.sort === 'value' ? '#4a4a4a' : 'inherit'}}>
+            <th
+              onClick={changeSort}
+              id="value"
+              className={tableHeaderStyle}
+              style={{ background: filters.sort === 'value' ? '#4a4a4a' : 'inherit' }}
+            >
               VAL
             </th>
-            <th onClick={changeSort} id="ownership" className={tableHeaderStyle} style={{background: filters.sort === 'ownership' ? '#4a4a4a' : 'inherit'}}>
+            <th
+              onClick={changeSort}
+              id="ownership"
+              className={tableHeaderStyle}
+              style={{ background: filters.sort === 'ownership' ? '#4a4a4a' : 'inherit' }}
+            >
               SEL
             </th>
-            <th onClick={changeSort} id="pointsPerGame" className={tableHeaderStyle} style={{background: filters.sort === 'pointsPerGame' ? '#4a4a4a' : 'inherit'}}>
+            <th
+              onClick={changeSort}
+              id="pointsPerGame"
+              className={tableHeaderStyle}
+              style={{ background: filters.sort === 'pointsPerGame' ? '#4a4a4a' : 'inherit' }}
+            >
               PPG
             </th>
-            <th onClick={changeSort} id="pointsPerStart" className={tableHeaderStyle} style={{background: filters.sort === 'pointsPerStart' ? '#4a4a4a' : 'inherit'}}>
+            <th
+              onClick={changeSort}
+              id="pointsPerStart"
+              className={tableHeaderStyle}
+              style={{ background: filters.sort === 'pointsPerStart' ? '#4a4a4a' : 'inherit' }}
+            >
               PPS
             </th>
-            <th onClick={changeSort} id="bps" className={tableHeaderStyle} style={{background: filters.sort === 'bps' ? '#4a4a4a' : 'inherit'}}>
+            <th
+              onClick={changeSort}
+              id="bps"
+              className={tableHeaderStyle}
+              style={{ background: filters.sort === 'bps' ? '#4a4a4a' : 'inherit' }}
+            >
               BPS
             </th>
-            <th onClick={changeSort} id="totalBonusPoints" className={tableHeaderStyle} style={{background: filters.sort === 'totalBonusPoints' ? '#4a4a4a' : 'inherit'}}>
+            <th
+              onClick={changeSort}
+              id="totalBonusPoints"
+              className={tableHeaderStyle}
+              style={{ background: filters.sort === 'totalBonusPoints' ? '#4a4a4a' : 'inherit' }}
+            >
               TBN
             </th>
-            <th onClick={changeSort} id="ict" className={tableHeaderStyle} style={{background: filters.sort === 'ict' ? '#4a4a4a' : 'inherit'}}>
+            <th
+              onClick={changeSort}
+              id="ict"
+              className={tableHeaderStyle}
+              style={{ background: filters.sort === 'ict' ? '#4a4a4a' : 'inherit' }}
+            >
               ICT
             </th>
-            <th onClick={changeSort} id="gamesStarted" className={tableHeaderStyle} style={{background: filters.sort === 'gamesStarted' ? '#4a4a4a' : 'inherit'}}>
+            <th
+              onClick={changeSort}
+              id="gamesStarted"
+              className={tableHeaderStyle}
+              style={{ background: filters.sort === 'gamesStarted' ? '#4a4a4a' : 'inherit' }}
+            >
               GST
             </th>
-            <th onClick={changeSort} id="goals" className={tableHeaderStyle} style={{background: filters.sort === 'goals' ? '#4a4a4a' : 'inherit'}}>
+            <th
+              onClick={changeSort}
+              id="goals"
+              className={tableHeaderStyle}
+              style={{ background: filters.sort === 'goals' ? '#4a4a4a' : 'inherit' }}
+            >
               GLS
             </th>
-            <th onClick={changeSort} id="assists" className={tableHeaderStyle} style={{background: filters.sort === 'assists' ? '#4a4a4a' : 'inherit'}}>
+            <th
+              onClick={changeSort}
+              id="assists"
+              className={tableHeaderStyle}
+              style={{ background: filters.sort === 'assists' ? '#4a4a4a' : 'inherit' }}
+            >
               AST
             </th>
-            <th onClick={changeSort} id="cleanSheets" className={tableHeaderStyle} style={{background: filters.sort === 'cleanSheets' ? '#4a4a4a' : 'inherit'}}>
+            <th
+              onClick={changeSort}
+              id="cleanSheets"
+              className={tableHeaderStyle}
+              style={{ background: filters.sort === 'cleanSheets' ? '#4a4a4a' : 'inherit' }}
+            >
               CLS
             </th>
-            <th onClick={changeSort} id="goalsConceded" className={tableHeaderStyle} style={{background: filters.sort === 'goalsConceded' ? '#4a4a4a' : 'inherit'}}>
+            <th
+              onClick={changeSort}
+              id="goalsConceded"
+              className={tableHeaderStyle}
+              style={{ background: filters.sort === 'goalsConceded' ? '#4a4a4a' : 'inherit' }}
+            >
               CON
             </th>
-            <th onClick={changeSort} id="totalPoints" className={tableHeaderStyle} style={{background: filters.sort === 'totalPoints' ? '#4a4a4a' : 'inherit'}}>
+            <th
+              onClick={changeSort}
+              id="totalPoints"
+              className={tableHeaderStyle}
+              style={{ background: filters.sort === 'totalPoints' ? '#4a4a4a' : 'inherit' }}
+            >
               Pts
             </th>
             {fixturesToDisplayArray.map((week, index) => (
@@ -191,6 +331,16 @@ export default function PlayersIndexTest() {
             <PlayerStatsRow player={player} activeGameWeek={activeGameweek} key={player.id} />
           ))}
         </tbody>
+        <ReactPaginate
+            breakLabel="..."
+            nextLabel="next >"
+            previousLabel="< prev"
+            onPageChange={handlePageClick}
+            pageRangeDisplayed={5}
+            pageCount={pageCount}
+            renderOnZeroPageCount={null}
+            className="flex gap-4 py-6"
+          />
       </table>
     </section>
   );
