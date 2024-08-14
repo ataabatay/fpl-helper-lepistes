@@ -1,36 +1,53 @@
+/* eslint-disable react/prop-types */
 import { useQuery } from 'react-query';
-import { getFDRsByWeek } from '../utils/Loaders';
-import { act } from 'react';
+import { createPlayerObjects, getFDRsByWeek } from '../utils/Loaders';
+import { difficultyColors } from '../utils/helpers';
 
-const playerStatsRow = ({ player }) => {
+const PlayerStatsRow = ({ player, activeGameWeek }) => {
+  const fixturesToShow = player?.fdrs?.slice(activeGameWeek - 1, NUMBER_OF_FIXTURES_TO_SHOW);
+
+  const tableDataStyle = 'flex items-center size-12 justify-center p-0';
+
   return (
-    <tr>
-      <td>{player.teamLogo}</td>
-      <td>
-        <div className="player-name flex flex-col gap-2">{player.displayName}</div>
-        <div className="team-formation flex gap-2">
-          <span className="team text-xs italic">{player.team}</span>
-          <span className="team text-xs italic">{player.position}</span>
+    <tr className="flex border-b border-[#4a4a4a] hover:cursor-pointer text-s font-light hover:bg-[#4a4a4a] active:bg-[#4a4a4a] focus:bg-[#4a4a4a]">
+      <td className={tableDataStyle}>
+        <img src={player.teamLogo} alt="" className="size-6" />
+      </td>
+      <td className={`${tableDataStyle} flex-col min-w-32`}>
+        <div className="player-name text-sm w-full">{player.displayName}</div>
+        <div className="team-formation flex gap-2 w-full">
+          <span className="team text-xs italic text-slate-500">{player.team}</span>
+          <span className="team text-xs italic text-slate-500">{player.position}</span>
         </div>
       </td>
-      <td>{player.form}</td>
-      <td>{player.value}</td>
-      <td>{player.ownership}</td>
-      <td>{player.pointsPerGame}</td>
-      <td>{player.pointsPerStart}</td>
-      <td>{player.pointsPerMinute}</td>
-      <td>{player.bps}</td>
-      <td>{player.totalBonusPoints}</td>
-      <td>{player.ict}</td>
-      <td>{player.gamesStarted}</td>
-      <td>{player.goals}</td>
-      <td>{player.assists}</td>
-      <td>{player.cleanSheets}</td>
-      <td>{player.goalsConceded}</td>
-      <td>{player.totalPoints}</td>
+      <td className={tableDataStyle}>{player.form}</td>
+      <td className={tableDataStyle}>{player.value}</td>
+      <td className={tableDataStyle}>{player.ownership}</td>
+      <td className={tableDataStyle}>{player.pointsPerGame}</td>
+      <td className={tableDataStyle}>{player.pointsPerStart.toFixed(1)}</td>
+      <td className={tableDataStyle}>{player.bps}</td>
+      <td className={tableDataStyle}>{player.totalBonusPoints}</td>
+      <td className={tableDataStyle}>{Number(player.ict).toFixed(0)}</td>
+      <td className={tableDataStyle}>{player.gamesStarted}</td>
+      <td className={tableDataStyle}>{player.goals}</td>
+      <td className={tableDataStyle}>{player.assists}</td>
+      <td className={tableDataStyle}>{player.cleanSheets}</td>
+      <td className={tableDataStyle}>{player.goalsConceded}</td>
+      <td className={tableDataStyle}>{player.totalPoints}</td>
+      {fixturesToShow?.map((match, index) => (
+        <td
+          key={index}
+          style={{ background: difficultyColors[match.gwDif] }}
+          className="text-xs text-nowrap flex items-center justify-center min-w-20 py-3"
+        >
+          {match.against} ({match.homeAway})
+        </td>
+      ))}
     </tr>
   );
 };
+
+const NUMBER_OF_FIXTURES_TO_SHOW = 10;
 
 export default function PlayersIndex() {
   const {
@@ -38,52 +55,57 @@ export default function PlayersIndex() {
     // isLoading: fixturesByWeekLoading,
     // error: fixturesByWeekError,
   } = useQuery('fdrsByWeek', getFDRsByWeek);
+  const {
+    data: allPlayers,
+    // isLoadiing: playersLoading,
+    // error: playersLoadingError
+  } = useQuery('playerObjects', createPlayerObjects);
 
-  const NUMBER_OF_FIXTURES_TO_SHOW = 10;
+  console.log(allPlayers);
+
   const activeGameweek = allFixturesByWeek.find((obj) => obj.activeGameWeek === true).gameweek;
   const weeksToDisplayArray = Array.from({ length: NUMBER_OF_FIXTURES_TO_SHOW }, (_, i) => activeGameweek + i);
 
   const tableHeaderStyle =
-    'p-2 hover:bg-[#4a4a4a] active:bg-[#4a4a4a] focus:bg-[#4a4a4a] hover:cursor-pointer text-xs font-light py-3';
+    'hover:bg-[#4a4a4a] active:bg-[#4a4a4a] focus:bg-[#4a4a4a] hover:cursor-pointer text-sm font-light size-12 flex items-center justify-center p-0';
 
   return (
-    <section className="all-players min-h-screen max-w-[3000px] mx-auto p-10 ">
-      <div className='p-5'>
+    <section className="all-players min-h-screen max-w-fit mx-auto p-8 ">
+      <div className="p-2 text-right">
         Active Gameweek:
         <span className="text-lg text-lime-400">{activeGameweek}</span>
       </div>
-      <table>
-        <thead className="flex border-b border-[#4a4a4a] gap-2">
-          <tr className="player-stats flex flex-col">
-            <tr>
-              <th className="pl-4 font-light text-lg">Player Stats</th>
-            </tr>
-            <tr className='flex'>
-              <th className={tableHeaderStyle}>TEA</th>
-              <th className={tableHeaderStyle}>NAM</th>
-              <th className={tableHeaderStyle}>FOR</th>
-              <th className={tableHeaderStyle}>VAL</th>
-              <th className={tableHeaderStyle}>SEL</th>
-              <th className={tableHeaderStyle}>PPG</th>
-              <th className={tableHeaderStyle}>PPS</th>
-              <th className={tableHeaderStyle}>PPM</th>
-              <th className={tableHeaderStyle}>BPS</th>
-              <th className={tableHeaderStyle}>TBN</th>
-              <th className={tableHeaderStyle}>ICT</th>
-              <th className={tableHeaderStyle}>GST</th>
-              <th className={tableHeaderStyle}>GOL</th>
-              <th className={tableHeaderStyle}>ASS</th>
-              <th className={tableHeaderStyle}>CSH</th>
-              <th className={tableHeaderStyle}>CON</th>
-              <th className={`${tableHeaderStyle} border-r border-[#4a4a4a]`}>TPS</th>
-              {weeksToDisplayArray.map((week, index) => (
-                <th key={index} className="text-xs text-nowrap flex justify-center min-w-20 py-3 font-light">
-                  GW{week}
-                </th>
-              ))}
-            </tr>
+      <table className="relative">
+        <thead className="sticky backdrop-blur-3xl top-0 flex border-b border-[#4a4a4a] gap-2">
+          <tr className="flex">
+            <th className={tableHeaderStyle}>TEA</th>
+            <th className={`${tableHeaderStyle} min-w-32 justify-stretch`}>NAM</th>
+            <th className={tableHeaderStyle}>FOR</th>
+            <th className={tableHeaderStyle}>VAL</th>
+            <th className={tableHeaderStyle}>SEL</th>
+            <th className={tableHeaderStyle}>PPG</th>
+            <th className={tableHeaderStyle}>PPS</th>
+            <th className={tableHeaderStyle}>BPS</th>
+            <th className={tableHeaderStyle}>TBN</th>
+            <th className={tableHeaderStyle}>ICT</th>
+            <th className={tableHeaderStyle}>GST</th>
+            <th className={tableHeaderStyle}>GLS</th>
+            <th className={tableHeaderStyle}>AST</th>
+            <th className={tableHeaderStyle}>CLS</th>
+            <th className={tableHeaderStyle}>CON</th>
+            <th className={tableHeaderStyle}>Pts</th>
+            {weeksToDisplayArray.map((week, index) => (
+              <th key={index} className="text-xs text-nowrap flex justify-center min-w-20 py-3 font-light">
+                GW{week}
+              </th>
+            ))}
           </tr>
         </thead>
+        <tbody>
+          {allPlayers.map((player) => (
+            <PlayerStatsRow player={player} activeGameWeek={activeGameweek} key={player.id} />
+          ))}
+        </tbody>
       </table>
     </section>
   );

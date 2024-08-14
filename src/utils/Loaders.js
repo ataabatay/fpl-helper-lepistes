@@ -165,8 +165,8 @@ export async function createPlayerObjects() {
           value: player.now_cost / 10,
           ownership: player.selected_by_percent,
           gamesStarted: player.starts,
-          pointsPerStart: player.total_points / player.starts,
-          pointsPerMinute: (player.total_points / player.minutes).toFixed(4),
+          pointsPerStart: player.starts != 0 ? player.total_points / player.starts.toFixed(1) : 0,
+          pointsPerMinute: (player.total_points / player.minutes).toFixed(1),
           pointsPerGame: player.points_per_game,
           goals: player.goals_scored,
           assists: player.assists,
@@ -183,7 +183,6 @@ export async function createPlayerObjects() {
         });
       }
     });
-    console.log(populatedPlayersData);
     return populatedPlayersData;
   } catch (error) {
     console.log(error);
