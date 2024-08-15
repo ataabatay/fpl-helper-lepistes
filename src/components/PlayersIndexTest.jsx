@@ -6,6 +6,7 @@ import { useEffect, useMemo, useState } from 'react';
 import ReactPaginate from 'react-paginate';
 import Select from 'react-select';
 import { SingleValue, ValueContainer } from 'react-select/animated';
+import { all } from 'axios';
 
 const NUMBER_OF_FIXTURES_TO_SHOW = 10;
 const PLAYERS_PER_PAGE = 20;
@@ -64,8 +65,8 @@ export default function PlayersIndexTest() {
 
   // ! Filter state
   const [filters, setFilters] = useState({
-    teamFilter: null,
-    positionFilter: null,
+    teamFilter: {value: 0, label: 'All'},
+    positionFilter: {value: 0, label: 'All'},
     sort: 'totalPoints',
   });
 
@@ -74,16 +75,22 @@ export default function PlayersIndexTest() {
   const filteredAndSortedPlayers = useMemo(() => {
     let result = [...allPlayers];
 
-    // TODO Filters to be introduced
+    // ! Filtering
+    const playersFilteredByTeam = result.filter((player) =>
+      filters.teamFilter.value === 0 ? player : player.teamId === filters.teamFilter['value']
+    );
+    const playersFilteredByTeamAndPositions = playersFilteredByTeam.filter((player) =>
+      filters.positionFilter.value === 0 ? player : player.positionId === filters.positionFilter['value']
+    );
 
     // ! Sorting
-    result.sort((a, b) => {
+    playersFilteredByTeamAndPositions.sort((a, b) => {
       if (filters.sort === 'goalsConceded') {
         return a[filters.sort] - b[filters.sort];
       }
       return b[filters.sort] - a[filters.sort];
     });
-    return result;
+    return playersFilteredByTeamAndPositions;
   }, [allPlayers, filters]);
 
   // ! Pagination
@@ -105,15 +112,23 @@ export default function PlayersIndexTest() {
     setCurrentPage(0);
   }
 
-  // ! Filters
+  // ! Filtering options
   const teamOptions = allTeams.map((team) => ({
     value: team.id,
     label: team.name,
   }));
+  teamOptions.unshift({
+    value: 0,
+    label: 'All'
+  })
   const positionOptions = positions.map((position) => ({
     value: position.id,
     label: position.singular_name_short,
   }));
+  positionOptions.unshift({
+    value: 0,
+    label: 'All'
+  })
   // function to filter players based on team
   function changeTeamFilter(e) {
     console.log(e);
@@ -331,6 +346,7 @@ export default function PlayersIndexTest() {
             <PlayerStatsRow player={player} activeGameWeek={activeGameweek} key={player.id} />
           ))}
         </tbody>
+      </table>
         <ReactPaginate
           breakLabel="..."
           nextLabel="next >"
@@ -341,7 +357,6 @@ export default function PlayersIndexTest() {
           renderOnZeroPageCount={null}
           className="flex gap-4 py-6"
         />
-      </table>
     </section>
   );
 }

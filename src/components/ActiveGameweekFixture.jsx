@@ -4,9 +4,7 @@ import { getFDRsByWeek } from '../utils/Loaders';
 import { useState } from 'react';
 
 export default function ActiveGameweekFixture() {
-  const {
-    data: allFixturesByWeek,
-  } = useQuery('fdrsByWeek', getFDRsByWeek);
+  const { data: allFixturesByWeek } = useQuery('fdrsByWeek', getFDRsByWeek);
 
   const [activeGameweek, setActiveGameweek] = useState(
     () => allFixturesByWeek.find((obj) => obj.activeGameWeek === true).gameweek
@@ -17,7 +15,7 @@ export default function ActiveGameweekFixture() {
     setActiveGameweek((prev) => {
       const newGameweek = prev - 1;
       setActiveGameweekFixtures(allFixturesByWeek[newGameweek - 1]?.fdrs || []);
-      return newGameweek
+      return newGameweek;
     });
   };
 
@@ -34,21 +32,27 @@ export default function ActiveGameweekFixture() {
       <section className="current-weeks-fixture flex justify-center min-w-fit">
         <table className="flex flex-col gap-10 p-10">
           <thead className="flex items-center justify-between relative">
-            {activeGameweek === 1 ? (
-              ''
-            ) : (
-              <button onClick={goToPrev} className="absolute left-0">
-                ⬅️
-              </button>
-            )}
-            <th className="flex text-3xl justify-center mx-auto">Gameweek {activeGameweek}</th>
-            {activeGameweek === allFixturesByWeek.length ? (
-              ''
-            ) : (
-              <button onClick={goToNext} className="absolute right-0">
-                ➡️
-              </button>
-            )}
+            <tr className="flex text-3xl justify-center mx-auto">
+              <td>
+                {activeGameweek === 1 ? (
+                  ''
+                ) : (
+                  <button onClick={goToPrev} className="absolute left-0">
+                    ⬅️
+                  </button>
+                )}
+              </td>
+              <td>Gameweek {activeGameweek}</td>
+              <td>
+                {activeGameweek === allFixturesByWeek.length ? (
+                  ''
+                ) : (
+                  <button onClick={goToNext} className="absolute right-0">
+                    ➡️
+                  </button>
+                )}
+              </td>
+            </tr>
           </thead>
           <tbody className="flex flex-col gap-4">
             {activeGameweekFixtures.map((game, index) => {

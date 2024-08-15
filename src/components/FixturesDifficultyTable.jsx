@@ -88,8 +88,8 @@ export default function FixturesDifficultyTable() {
               <th className="min-w-6">GF</th>
               <th className="min-w-6">GA</th>
               <th className="min-w-6">Pt</th>
-              {allFixturesByWeek.map((week) => (
-                <th className="text-xs text-nowrap flex items-center justify-center min-w-20 py-3" key={week.id}>
+              {allFixturesByWeek.map((week, index) => (
+                <th key={index} className="text-xs text-nowrap flex items-center justify-center min-w-20 py-3">
                   GW{week.gameweek}
                 </th>
               ))}
