@@ -31,8 +31,8 @@ export default function ActiveGameweekFixture() {
 
   return (
     <>
-      <section className="current-weeks-fixture flex justify-center">
-        <table className="w-120 flex flex-col gap-10 max-w-fit p-10">
+      <section className="current-weeks-fixture flex justify-center min-w-fit">
+        <table className="flex flex-col gap-10 p-10">
           <thead className="flex items-center justify-between relative">
             {activeGameweek === 1 ? (
               ''
