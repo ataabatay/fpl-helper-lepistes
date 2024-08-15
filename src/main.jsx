@@ -2,15 +2,13 @@ import { createRoot } from 'react-dom/client';
 import './index.css';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import HomeView from './components/MainView.jsx';
-import PlayersIndex from './components/PlayersIndex.jsx';
 import MyTeam from './components/MyTeamView.jsx';
 import Fixtures from './components/FixturesPage.jsx';
 import Login from './components/Login.jsx';
 import { getAllData, getFDRsByWeek, createPlayerObjects, getFDRsByTeam, LogUserIn } from './utils/Loaders.js';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import HomeScreen from './components/HomeScreen.jsx';
-import PaginatedPlayers from './components/PaginatedPlayers.jsx';
-import PlayersIndexTest from './components/PlayersIndexTest.jsx';
+import PlayersIndex from './components/PlayersIndex.jsx';
 
 const queryClient = new QueryClient();
 
@@ -23,6 +21,7 @@ const router = createBrowserRouter([
         queryClient.fetchQuery('allData', getAllData),
         queryClient.fetchQuery('fdrsByWeek', getFDRsByWeek),
         queryClient.fetchQuery('fdrsByTeam', getFDRsByTeam),
+        queryClient.fetchQuery('playerObjects', createPlayerObjects),
       ]);
       return { allData, fdrsByWeek, fdrsByTeam };
     },
@@ -33,10 +32,7 @@ const router = createBrowserRouter([
       },
       {
         path: '/players',
-        element: <PlayersIndexTest />,
-        loader: async () => {
-          return queryClient.fetchQuery('playerObjects', createPlayerObjects);
-        },
+        element: <PlayersIndex />,
       },
       {
         path: '/myteam',
@@ -45,14 +41,10 @@ const router = createBrowserRouter([
       {
         path: '/fixtures',
         element: <Fixtures />,
-        loader: async () => {
-          return queryClient.fetchQuery('fdrsByTeam', getFDRsByTeam);
-        },
       },
       {
         path: '/login',
         element: <Login />,
-        action: LogUserIn,
       },
     ],
   },
