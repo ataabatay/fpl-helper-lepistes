@@ -1,7 +1,9 @@
 /* eslint-disable react/prop-types */
 import { useQuery } from 'react-query';
-import { getAllData, getFDRsByTeam, getFDRsByWeek } from '../utils/Loaders';
+import { getAllData } from '../utils/Loaders';
 import { difficultyColors, getTeamFixtures } from '../utils/helpers';
+import { useFDRsBYWeek } from '../hooks/useFDRsByWeek';
+import { useFDRsByTeam } from '../hooks/useFDRsByTeam';
 
 const FDRTableTeamRow = ({ idx, team, totalGoalsFor, totalGoalsAgainst, fixtures }) => {
   return (
@@ -43,17 +45,8 @@ export default function FixturesDifficultyTable() {
     // isLoading: allDataLoading,
     // error: allDataError,
   } = useQuery('allData', getAllData);
-  const {
-    data: allFixturesByWeek,
-    // isLoading: fixturesByWeekLoading,
-    // error: fixturesByWeekError,
-  } = useQuery('fdrsByWeek', getFDRsByWeek);
-  const {
-    data: allFixturesByTeam,
-    // isLoading: fixturesByTeamLoading,
-    // error: fixturesByTeamError,
-  } = useQuery('fdrsByTeam', getFDRsByTeam);
-
+  const allFixturesByWeek = useFDRsBYWeek()
+  const allFixturesByTeam = useFDRsByTeam()
   const NUMBER_OF_FIXTURES_TO_SHOW = allFixturesByWeek.length;
   const activeGameweek = allFixturesByWeek.find((obj) => obj.activeGameWeek === true).gameweek;
 

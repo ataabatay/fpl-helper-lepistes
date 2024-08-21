@@ -1,10 +1,9 @@
 /* eslint-disable react/prop-types */
-import { useQuery } from 'react-query';
-import { getFDRsByWeek } from '../utils/Loaders';
 import { useState } from 'react';
+import { useFDRsBYWeek } from '../hooks/useFDRsByWeek';
 
 export default function ActiveGameweekFixture() {
-  const { data: allFixturesByWeek } = useQuery('fdrsByWeek', getFDRsByWeek);
+  const allFixturesByWeek = useFDRsBYWeek();
 
   const [activeGameweek, setActiveGameweek] = useState(
     () => allFixturesByWeek.find((obj) => obj.activeGameWeek === true).gameweek

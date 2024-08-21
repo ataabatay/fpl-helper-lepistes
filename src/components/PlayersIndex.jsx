@@ -1,17 +1,17 @@
 /* eslint-disable react/prop-types */
-import { useQuery } from 'react-query';
-import { createPlayerObjects, getFDRsByWeek } from '../utils/Loaders';
 import { useMemo, useState } from 'react';
 import ReactPaginate from 'react-paginate';
 import Filters from './Filters';
 import PlayerStatsRow from './PlayerStatsRow';
+import { useFDRsBYWeek } from '../hooks/useFDRsByWeek';
+import { usePlayerObjects } from '../hooks/usePlayerObjects';
 
 const NUMBER_OF_FIXTURES_TO_SHOW = 10;
 const PLAYERS_PER_PAGE = 20;
 
 export default function PlayersIndex() {
-  const { data: allFixturesByWeek } = useQuery('fdrsByWeek', getFDRsByWeek);
-  const { data: allPlayers } = useQuery('playerObjects', createPlayerObjects);
+  const allFixturesByWeek = useFDRsBYWeek()
+  const allPlayers = usePlayerObjects()
 
   // ! Filter state
   const [filters, setFilters] = useState({

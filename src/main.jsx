@@ -5,7 +5,10 @@ import HomeView from './components/MainView.jsx';
 import MyTeam from './components/MyTeamView.jsx';
 import Fixtures from './components/FixturesPage.jsx';
 import Login from './components/Login.jsx';
-import { getAllData, getFDRsByWeek, createPlayerObjects, getFDRsByTeam, LogUserIn } from './utils/Loaders.js';
+import {
+  getAllData,
+  getRawFixturesData,
+} from './utils/Loaders.js';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import HomeScreen from './components/HomeScreen.jsx';
 import PlayersIndex from './components/PlayersIndex.jsx';
@@ -17,13 +20,11 @@ const router = createBrowserRouter([
     path: '/',
     element: <HomeView />,
     loader: async () => {
-      const [allData, fdrsByWeek, fdrsByTeam] = await Promise.all([
+      const [allData, rawFixtures] = await Promise.all([
         queryClient.fetchQuery('allData', getAllData),
-        queryClient.fetchQuery('fdrsByWeek', getFDRsByWeek),
-        queryClient.fetchQuery('fdrsByTeam', getFDRsByTeam),
-        queryClient.fetchQuery('playerObjects', createPlayerObjects),
+        queryClient.fetchQuery('rawFixtures', getRawFixturesData),
       ]);
-      return { allData, fdrsByWeek, fdrsByTeam };
+      return { allData, rawFixtures };
     },
     children: [
       {
