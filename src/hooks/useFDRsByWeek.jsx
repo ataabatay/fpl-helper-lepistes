@@ -7,12 +7,7 @@ export const useFDRsBYWeek = () => {
     const teams = allData.teams;
 
     //  disecting the current gameweek id so we can use it
-    let activeGameweek = null;
-    if (allData.events.find((obj) => obj.is_current === true)) {
-      activeGameweek = allData.events.find((obj) => obj.is_current === true).id;
-    } else {
-      activeGameweek = allData.events.find((obj) => obj.is_next === true).id;
-    }
+    let activeGameweek = allData.events.find((obj) => obj.is_next === true).id
     const gameweekArray = [];
 
     fixtures.forEach((fixture) => {
